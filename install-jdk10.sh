@@ -21,4 +21,3 @@ export PATH=${JAVA_HOME}/bin:$PATH
 cd ..
 
 ${JAVA_HOME}/bin/java --version
-
