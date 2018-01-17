@@ -85,7 +85,13 @@ public class Runner {
     
     Matcher oldMatcher = OLD_JDK_VERSION.matcher(version);
     if (oldMatcher.matches()) {
-      version = oldMatcher.group(1);
+      String oldVersion = oldMatcher.group(1);
+      int dot = oldVersion.indexOf('.');
+      if (oldVersion.substring(dot + 1).equals("0")) {
+        version = oldVersion.substring(dot);
+      } else {
+        version = oldVersion;
+      }
     } else {
       // only keep major and minor
       Version sysVersion = Version.parse(version);
