@@ -20,5 +20,5 @@ export JAVA_HOME=./jdk/jdk-${JDK_FEATURE}
 export PATH=${JAVA_HOME}/bin:$PATH
 cd ..
 
-java --version
+${JAVA_HOME}/bin/java --version
 

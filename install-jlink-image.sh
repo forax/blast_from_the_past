@@ -8,5 +8,4 @@ ${JAVA_HOME}/bin/jlink --add-modules java.base --output jlink_jdk
 export JAVA_HOME=jlink_jdk
 export PATH=${JAVA_HOME}/bin:$PATH
 
-echo ${JAVA_HOME}
-java --version
+${JAVA_HOME}/bin/java --version
