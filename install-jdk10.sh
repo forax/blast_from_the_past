@@ -12,12 +12,12 @@ JDK_BUILD="$(echo "${TMP}" | tr -d '[:space:]')"        # remove all whitespace
 
 JDK_ARCHIVE=openjdk-${JDK_FEATURE}-ea+${JDK_BUILD}_linux-x64_bin.tar.gz
 
-mkdir -p jdk
-cd jdk
+mkdir ~/jdk
+cd ~/jdk
 wget http://download.java.net/java/jdk${JDK_FEATURE}/archive/${JDK_BUILD}/GPL/${JDK_ARCHIVE}
 tar -xzf ${JDK_ARCHIVE}
-export JAVA_HOME=./jdk/jdk-${JDK_FEATURE}
+export JAVA_HOME=~/jdk/jdk-${JDK_FEATURE}
 export PATH=${JAVA_HOME}/bin:$PATH
-cd ..
+cd -
 
 ${JAVA_HOME}/bin/java --version
