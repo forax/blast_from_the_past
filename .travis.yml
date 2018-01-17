@@ -12,8 +12,8 @@ before_install:
 
 install:
   - cd runner
-  - ${JAVA_HOME}/bin/javac --release 9 -d ../bin Runner.java
+  - javac --release 9 -d ../bin Runner.java
   - cd - 
 
 script:
-  - java -classpath bin Runner
+  - ${JAVA_HOME}/bin/java -classpath bin Runner
