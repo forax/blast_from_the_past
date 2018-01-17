@@ -17,4 +17,3 @@ install:
 
 script:
   - java -classpath bin Runner
-
