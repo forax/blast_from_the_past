@@ -12,6 +12,7 @@ before_install:
 
 install:
   - cd runner
+  - echo ${JAVA_HOME}
   - javac --release 9 -d ../bin Runner.java
   - cd - 
 
