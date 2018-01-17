@@ -88,7 +88,7 @@ public class Runner {
       String oldVersion = oldMatcher.group(1);
       int dot = oldVersion.indexOf('.');
       if (oldVersion.substring(dot + 1).equals("0")) {
-        version = oldVersion.substring(dot);
+        version = oldVersion.substring(0, dot);
       } else {
         version = oldVersion;
       }
