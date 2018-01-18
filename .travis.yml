@@ -3,12 +3,26 @@ sudo: false
 
 matrix:
   include:
+    
     - jdk: oraclejdk9
-    - jdk: oraclejdk9
+      env: JDK_VERSION='1.5'
       before_install: unset _JAVA_OPTIONS && . ./install-jdk5.sh
     - jdk: oraclejdk9
+      env: JDK_VERSION='1.6'
+      before_install: unset _JAVA_OPTIONS && . ./install-jdk6.sh
+    - jdk: oraclejdk9
+      env: JDK_VERSION='1.7'
+      before_install: unset _JAVA_OPTIONS && . ./install-jdk7.sh
+    - jdk: oraclejdk9
+      env: JDK_VERSION='1.8'
+      before_install: unset _JAVA_OPTIONS && . ./install-jdk8.sh
+    - jdk: oraclejdk9
+      env: JDK_VERSION='9'
+    - jdk: oraclejdk9
+      env: JDK_VERSION='10'
       before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh
     - jdk: oraclejdk9
+      env: JDK_VERSION='10-jlink'
       before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh && . ./install-jlink-image.sh
 
 before_install:
