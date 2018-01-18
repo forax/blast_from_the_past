@@ -9,7 +9,7 @@ matrix:
     - jdk: oraclejdk9
       before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh
     - jdk: oraclejdk9
-      before_install: unset _JAVA_OPTIONS && . ./install-jlink-image.sh
+      before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh && . ./install-jlink-image.sh
 
 before_install:
   - unset _JAVA_OPTIONS
