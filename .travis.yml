@@ -6,8 +6,10 @@ matrix:
     - jdk: oraclejdk9
     - jdk: oraclejdk9
       before_install: unset _JAVA_OPTIONS && . ./install-jdk5.sh
-    - before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh
-    - before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh && . ./install-jlink-image.sh
+    - jdk: oraclejdk9
+      before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh
+    - jdk: oraclejdk9
+      before_install: unset _JAVA_OPTIONS && . ./install-jlink-image.sh
 
 before_install:
   - unset _JAVA_OPTIONS
@@ -18,4 +20,4 @@ install:
   - cd - 
 
 script:
-  - ${JAVA_HOME}/bin/java -classpath bin Runner
+  - java -classpath bin Runner
