@@ -4,6 +4,8 @@ sudo: false
 matrix:
   include:
     - jdk: oraclejdk9
+    - jdk: oraclejdk9
+      before_install: unset _JAVA_OPTIONS && . ./install-jdk5.sh
     - before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh
     - before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh && . ./install-jlink-image.sh
 
