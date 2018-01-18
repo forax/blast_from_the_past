@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 
 public class Runner {
   private static final Pattern JAVA_CMD_EXTRACT_VERSION_PATTERN = Pattern.compile(".*\"([^\"]+)\".*");
-  private static final Pattern OLD_JDK_VERSION = Pattern.compile("(.*\\..*)\\..*");
+  private static final Pattern OLD_JDK_VERSION = Pattern.compile("(.*)\\.(.*)\\..*");
   private static final Pattern PATH_VERSION_PATTERN = Pattern.compile(".*/blast_from_the_past(.*)/.*");
   
   private static List<Long> test(Path javaCmd, Path repository, String className, int repetition) {
@@ -81,22 +81,19 @@ public class Runner {
     if (!matcher.matches()) {
       throw new IOException("invalid version format\n" + result);
     }
-    String version = matcher.group(1);
+    String textVersion = matcher.group(1);
     
-    Matcher oldMatcher = OLD_JDK_VERSION.matcher(version);
+    int major, minor;
+    Matcher oldMatcher = OLD_JDK_VERSION.matcher(textVersion);
     if (oldMatcher.matches()) {
-      String oldVersion = oldMatcher.group(1);
-      int dot = oldVersion.indexOf('.');
-      if (oldVersion.substring(dot + 1).equals("0")) {
-        version = oldVersion.substring(0, dot);
-      } else {
-        version = oldVersion;
-      }
+      major = Integer.parseInt(oldMatcher.group(1));
+      minor = Integer.parseInt(oldMatcher.group(2));
     } else {
-      // only keep major and minor
-      Version sysVersion = Version.parse(version);
-      version = sysVersion.minor() == 0 ? "" + sysVersion.major(): sysVersion.major() + "." + sysVersion.minor();
+      Version sysVersion = Version.parse(textVersion);
+      major = sysVersion.major();
+      minor = sysVersion.minor();
     }
+    String version = minor == 0 ? "" + major: major + "." + minor;
     return Version.parse(version);
   }
 
