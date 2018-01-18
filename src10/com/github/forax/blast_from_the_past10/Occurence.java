@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -21,7 +22,7 @@ public class Occurence {
     }
     
     var list = new ArrayList<>(map.entrySet());
-    list.sort(Map.Entry.<String,Long>comparingByValue().reversed());
+    list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
     System.out.println(list);
   }
 }
