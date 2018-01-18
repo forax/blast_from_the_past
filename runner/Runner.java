@@ -183,7 +183,7 @@ public class Runner {
     Path javaCmd = javaHome.resolve("bin/java");
     
     Version version = version(javaCmd);
-    System.out.println("current jdk version: " + version);
+    System.out.println("test jdk version: " + version);
     
     Path repository = repository(args);
     System.out.println("test repository: " + repository);
