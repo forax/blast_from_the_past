@@ -32,29 +32,31 @@ public class Runner {
   private static final Pattern PATH_VERSION_PATTERN = Pattern.compile(".*/blast_from_the_past(.*)/.*");
   
   interface ProcessExecutor {
-    Process execute(String... commands) throws IOException;
+    Process execute(Redirect input, Redirect output, Redirect error, String... commands) throws IOException;
     
     static ProcessExecutor local() {
       return Runner::execute;
     }
     
     static ProcessExecutor docker(String containerId) {
-      return commands -> {
-        return Runner.execute(concat(
-            Stream.of("docker", "exec", "-t", containerId),
-            Arrays.stream(commands)
-          ).toArray(String[]::new));
+      return (input, output, error, commands) -> {
+        return Runner.execute(
+            input, output, error,
+            concat(
+              Stream.of("docker", "exec", "-t", containerId),
+              Arrays.stream(commands)
+            ).toArray(String[]::new));
       };
     }
   }
   
-  static Process execute(String... commands) throws IOException {
+  static Process execute(Redirect input, Redirect output, Redirect error, String... commands) throws IOException {
     ProcessBuilder builder = new ProcessBuilder(commands);
     return
       builder
-        .redirectInput(Redirect.INHERIT)
-        .redirectOutput(Redirect.DISCARD)
-        .redirectError(Redirect.INHERIT)
+        .redirectInput(input)
+        .redirectOutput(output)
+        .redirectError(error)
         .start();
   }
   
@@ -71,7 +73,9 @@ public class Runner {
   }
   
   private static long test(ProcessExecutor executor, Path javaCmd, Path repository, String className) throws IOException {
-    Process process = executor.execute(javaCmd.toString(), "-classpath", repository.toString(), className);
+    Process process = executor.execute(
+        Redirect.INHERIT, Redirect.DISCARD, Redirect.INHERIT,
+        javaCmd.toString(), "-classpath", repository.toString(), className);
     long start = System.currentTimeMillis();
     awaitTermination(process);
     long end = System.currentTimeMillis();
@@ -79,7 +83,9 @@ public class Runner {
   }
   
   private static Version version(ProcessExecutor executor, Path javaCmd) throws IOException{
-    Process process = executor.execute(javaCmd.toString(), "-version");
+    Process process = executor.execute(
+        Redirect.INHERIT, Redirect.INHERIT, Redirect.PIPE,
+        javaCmd.toString(), "-version");
     
     List<String> result;
     try(InputStream input = process.getErrorStream();
