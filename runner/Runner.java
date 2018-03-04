@@ -2,6 +2,7 @@ import static java.nio.file.Files.walk;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
+import static java.util.stream.Stream.concat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +15,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.lang.Runtime.Version;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.Optional;
@@ -29,40 +31,55 @@ public class Runner {
   private static final Pattern OLD_JDK_VERSION = Pattern.compile("(.*)\\.(.*)\\..*");
   private static final Pattern PATH_VERSION_PATTERN = Pattern.compile(".*/blast_from_the_past(.*)/.*");
   
-  private static List<Long> test(Path javaCmd, Path repository, String className, int repetition) {
-    return range(0, repetition).mapToObj(i -> tryTest(javaCmd, repository, className)).collect(toList());
-  }
-
-  private static long tryTest(Path javaCmd, Path repository, String className) {
-    try {
-      return test(javaCmd, repository, className);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
+  interface ProcessExecutor {
+    Process execute(String... commands) throws IOException;
+    
+    static ProcessExecutor local() {
+      return Runner::execute;
+    }
+    
+    static ProcessExecutor docker(String containerId) {
+      return commands -> {
+        return Runner.execute(concat(
+            Stream.of("docker", "exec", "-t", containerId),
+            Arrays.stream(commands)
+          ).toArray(String[]::new));
+      };
     }
   }
   
-  private static long test(Path javaCmd, Path repository, String className) throws IOException {
-    ProcessBuilder builder = new ProcessBuilder(javaCmd.toString(), "-classpath", repository.toString(), className);
-    Process process =
+  static Process execute(String... commands) throws IOException {
+    ProcessBuilder builder = new ProcessBuilder(commands);
+    return
       builder
         .redirectInput(Redirect.INHERIT)
         .redirectOutput(Redirect.DISCARD)
         .redirectError(Redirect.INHERIT)
         .start();
+  }
+  
+  private static List<Long> test(ProcessExecutor executor, Path javaCmd, Path repository, String className, int repetition) {
+    return range(0, repetition).mapToObj(i -> tryTest(executor, javaCmd, repository, className)).collect(toList());
+  }
+
+  private static long tryTest(ProcessExecutor executor, Path javaCmd, Path repository, String className) {
+    try {
+      return test(executor, javaCmd, repository, className);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+  
+  private static long test(ProcessExecutor executor, Path javaCmd, Path repository, String className) throws IOException {
+    Process process = executor.execute(javaCmd.toString(), "-classpath", repository.toString(), className);
     long start = System.currentTimeMillis();
     awaitTermination(process);
     long end = System.currentTimeMillis();
     return end - start;
   }
   
-  private static Version version(Path javaCmd) throws IOException{
-    ProcessBuilder builder = new ProcessBuilder(javaCmd.toString(), "-version");
-    Process process =
-      builder
-        .redirectInput(Redirect.INHERIT)
-        .redirectOutput(Redirect.INHERIT)
-        .redirectError(Redirect.PIPE)
-        .start();
+  private static Version version(ProcessExecutor executor, Path javaCmd) throws IOException{
+    Process process = executor.execute(javaCmd.toString(), "-version");
     
     List<String> result;
     try(InputStream input = process.getErrorStream();
@@ -114,6 +131,13 @@ public class Runner {
         .ofNullable(System.getenv("JAVA_HOME"))
         .orElseGet(() -> System.getProperty("java.home"));
     return Paths.get(javaHome);
+  }
+  
+  private static ProcessExecutor processExecutor(String containerId) {
+    return Optional
+        .ofNullable(containerId)
+        .map(ProcessExecutor::docker)
+        .orElseGet(ProcessExecutor::local);
   }
   
   private static Path repository(String[] args) {
@@ -175,14 +199,21 @@ public class Runner {
         sigma);
   }
   
+  
+  
   public static void main(String[] args) throws IOException {
     int repetition = 24;
+    
+    String containerId = System.getenv("DOCKER_CONTAINER_ID");
+    Optional.ofNullable(containerId)
+            .ifPresent(id -> System.out.println("container id " + id));
+    ProcessExecutor executor = processExecutor(containerId); 
     
     Path javaHome = javaHome();
     System.out.println("java home: " + javaHome);
     Path javaCmd = javaHome.resolve("bin/java");
     
-    Version version = version(javaCmd);
+    Version version = version(executor, javaCmd);
     System.out.println("test jdk version: " + version);
     
     Path repository = repository(args);
@@ -196,7 +227,7 @@ public class Runner {
       System.out.println("test version " + testVersion);
       testClasses.forEach(testClass -> {
         System.out.println("test class " + testClass);
-        List<Long> times = test(javaCmd, repository, testClass, repetition);
+        List<Long> times = test(executor, javaCmd, repository, testClass, repetition);
         
         times.sort(null);
         List<Long> values= times.subList(2, times.size() - 2);  // remove the 2 worst and the 2 best
