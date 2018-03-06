@@ -9,7 +9,7 @@ matrix:
       services: docker
       before_install:
         - unset _JAVA_OPTIONS && . ./install-jdk2.sh
-        - docker run -v ~/jdk:/jdk -d -it i386/ubuntu bash > container_id
+        - docker run -v ~/jdk:/jdk -e LD_LIBRARY_PATH=jdk/jdk1.2.2/jre/lib/i386/ -d -it i386/ubuntu bash > container_id
         - export DOCKER_CONTAINER_ID=`cat container_id`
     - jdk: oraclejdk9
       env: JDK_VERSION='1.5'
