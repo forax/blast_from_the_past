@@ -31,15 +31,7 @@ public class Occurence {
     Collections.sort(list, new Comparator<Map.Entry<String, Long>>() {
       @Override
       public int compare(Entry<String, Long> e1, Entry<String, Long> e2) {
-        long l1 = e1.getValue();
-        long l2 = e2.getValue();
-        if (l1 == l2) {
-          return 0;
-        }
-        if (l1 < l2) {
-          return 1;
-        }
-        return -1;
+        return Long.compare(e1.getValue(), e2.getValue());
       }
     });
     System.out.println(list);

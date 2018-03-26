@@ -205,8 +205,6 @@ public class Runner {
         sigma);
   }
   
-  
-  
   public static void main(String[] args) throws IOException {
     int repetition = 24;
     

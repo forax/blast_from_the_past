@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+//duplicate of v1.5
 public class Occurence {
   public static void main(String[] args) throws IOException {
     File file = new File("romeo_and_juliet.txt");
