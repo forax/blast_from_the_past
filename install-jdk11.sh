@@ -3,8 +3,8 @@ set -e
 
 mkdir ~/jdk
 cd ~/jdk
-wget https://download.java.net/java/early_access/jdk11/5/GPL/openjdk-11-ea+5_linux-x64_bin.tar.gz
-tar -xzf openjdk-11-ea+5_linux-x64_bin.tar.gz
+wget http://monge.univ-mlv.fr/~forax/tmp/jdk/jdk-11-amber-raw-27-03-2018-linux_x64.tar.gz
+tar -xzf jdk-11-amber-raw-27-03-2018-linux_x64.tar.gz
 export JAVA_HOME=~/jdk/jdk-11
 cd -
 
