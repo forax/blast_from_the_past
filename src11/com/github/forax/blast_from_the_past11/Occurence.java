@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class Occurence {
   public static void main(String[] args) throws IOException {
-    var pattern = Pattern.compile(" ");
-    var path = Paths.get("romeo_and_juliet.txt");
+    var pattern = Pattern.compile(`` ``);
+    var path = Paths.get(```romeo_and_juliet.txt```);
     
     Map<String, Long> map;
     try(var lines = Files.lines(path)) {
