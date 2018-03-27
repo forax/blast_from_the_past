@@ -24,7 +24,7 @@ matrix:
       env: JDK_VERSION='10-jlink'
       before_install: unset _JAVA_OPTIONS && . ./install-jdk10.sh && . ./install-jlink-image.sh
     - jdk: oraclejdk9
-      env: JDK_VERSION='11'
+      env: JDK_VERSION='11-amber'
       before_install: unset _JAVA_OPTIONS && . ./install-jdk11.sh
 
 before_install:
