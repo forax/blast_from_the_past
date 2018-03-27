@@ -20,7 +20,7 @@ public class Occurence {
     Map<String, Long> map;
     try(Stream<String> lines = Files.lines(path)) {
       map = lines.flatMap(pattern::splitAsStream)
-                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+                 .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
     }
     ArrayList<Map.Entry<String,Long>> list = new ArrayList<>(map.entrySet());
     list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));

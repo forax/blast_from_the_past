@@ -18,7 +18,7 @@ public class Occurence {
     Map<String, Long> map;
     try(var lines = Files.lines(path)) {
       map = lines.flatMap(pattern::splitAsStream)
-                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+                 .collect(Collectors.groupingBy(w -> w, Collectors.counting()));
     }
     
     var list = new ArrayList<>(map.entrySet());
